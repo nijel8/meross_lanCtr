@@ -53,9 +53,7 @@ class MLGarageTimeoutBinarySensor(me.MEPartialAvailableMixin, MLBinarySensor):
     def update_ok(self, was_closing):
         extra_state_attributes = self.extra_state_attributes
         if extra_state_attributes.get(self.ATTR_TRANSITION_TARGET) == (
-            MLCover.ENTITY_COMPONENT.STATE_CLOSED
-            if was_closing
-            else MLCover.ENTITY_COMPONENT.STATE_OPEN
+            MLCover.CoverState.CLOSED if was_closing else MLCover.CoverState.OPEN
         ):
             extra_state_attributes.pop(self.ATTR_TRANSITION_TIMEOUT, None)
             extra_state_attributes.pop(self.ATTR_TRANSITION_TARGET, None)
@@ -63,9 +61,7 @@ class MLGarageTimeoutBinarySensor(me.MEPartialAvailableMixin, MLBinarySensor):
 
     def update_timeout(self, was_closing):
         self.extra_state_attributes[self.ATTR_TRANSITION_TARGET] = (
-            MLCover.ENTITY_COMPONENT.STATE_CLOSED
-            if was_closing
-            else MLCover.ENTITY_COMPONENT.STATE_OPEN
+            MLCover.CoverState.CLOSED if was_closing else MLCover.CoverState.OPEN
         )
         self.extra_state_attributes[self.ATTR_TRANSITION_TIMEOUT] = now().isoformat()
         self.is_on = True
@@ -631,7 +627,9 @@ class GarageDoorConfigNamespaceHandler(NamespaceHandler):
             handler=self._handle_Appliance_GarageDoor_Config,
         )
 
-    def _handle_Appliance_GarageDoor_Config(self, header, payload: "mt.MerossPayloadType"):
+    def _handle_Appliance_GarageDoor_Config(
+        self, header, payload: "mt.MerossPayloadType"
+    ):
         # {"config": {"signalDuration": 1000, "buzzerEnable": 0, "doorOpenDuration": 30000, "doorCloseDuration": 30000}}
         payload = payload[mc.KEY_CONFIG]
         if mc.KEY_SIGNALDURATION in payload:
