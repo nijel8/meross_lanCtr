@@ -1691,14 +1691,6 @@ class Device(BaseDevice, ConfigEntryManager):
         await self.async_request_poll(handler)
         return True
 
-    def request_lazypoll(self, handler: NamespaceHandler):
-        """Insert into the lazypoll_requests ordering by least recently polled"""
-
-        def _lazypoll_key(_handler: NamespaceHandler):
-            return _handler.lastrequest - self._polling_epoch
-
-        bisect.insort(self._lazypoll_requests, handler, key=_lazypoll_key)
-
     async def _async_request_updates(self, namespace: str | None):
         """
         This is a 'versatile' polling strategy called on timer

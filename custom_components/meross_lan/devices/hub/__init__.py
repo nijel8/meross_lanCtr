@@ -1483,14 +1483,14 @@ POLLING_STRATEGY_CONF |= {
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         100,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn_h.Appliance_Control_Sensor_LatestX: (
         mlc.PARAM_SENSOR_SLOW_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         220,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn_h.Appliance_Control_Water: (
         0,
@@ -1504,14 +1504,14 @@ POLLING_STRATEGY_CONF |= {
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         40,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn_h.Appliance_Hub_Mts100_Adjust: (
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         40,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn_h.Appliance_Hub_Mts100_All: (
         mlc.PARAM_HEARTBEAT_PERIOD,
@@ -1532,7 +1532,7 @@ POLLING_STRATEGY_CONF |= {
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         60,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn_h.Appliance_Hub_Sensor_All: (
         mlc.PARAM_HEARTBEAT_PERIOD,

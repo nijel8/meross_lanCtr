@@ -1,3 +1,4 @@
+import bisect
 from typing import TYPE_CHECKING
 
 from .. import const as mlc
@@ -595,7 +596,7 @@ class NamespaceHandler:
         if not (device._mqtt_active and self.polling_epoch_next):
             await device.async_request_poll(self)
 
-    async def async_poll_lazy(self):
+    async def async_poll_smart(self):
         """
         This strategy is for those namespaces which might be skipped now and then
         if they don't fit in the current ns_multiple request. Their delaying
@@ -603,20 +604,22 @@ class NamespaceHandler:
         or data which are not 'critical'. For those namespaces, polling_period
         is considered the maximum amount of time after which the poll 'has' to
         be done. If it hasn't elapsed then they're eventually packed
-        with the outgoing ns_multiple
+        with the outgoing ns_multiple (lazy polling)
         """
         device = self.device
-        if device._polling_epoch >= self.polling_epoch_next:
-            await device.async_request_smartpoll(self)
-        else:
-            device.request_lazypoll(self)
+        if device._mqtt_active and self.polling_epoch_next and self.ns.has_push:
+            # on MQTT no need for updates since they're being PUSHed
+            return
 
-    async def async_poll_smart(self):
-        device = self.device
         if device._polling_epoch >= self.polling_epoch_next:
-            if not await device.async_request_smartpoll(self):
-                # if the cloud MQTT limit hitted try to compete for lazypolls
-                device.request_lazypoll(self)
+            if await device.async_request_smartpoll(self):
+                return
+
+        # Insert into the lazypoll_requests ordering by least recently polled
+        def _lazypoll_key(_handler: NamespaceHandler):
+            return _handler.lastrequest - device._polling_epoch
+
+        bisect.insort_right(device._lazypoll_requests, self, key=_lazypoll_key)
 
     async def async_poll_once(self):
         """
@@ -932,21 +935,21 @@ POLLING_STRATEGY_CONF: dict[mn.Namespace, "NamespaceConfigType"] = {
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         320,
         0,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_System_Runtime: (
         mlc.PARAM_SENSOR_SLOW_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         330,
         0,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Config_OverTemp: (
         mlc.PARAM_CONFIG_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         340,
         0,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Control_ConsumptionH: (
         mlc.PARAM_ENERGY_UPDATE_PERIOD,
@@ -967,7 +970,7 @@ POLLING_STRATEGY_CONF: dict[mn.Namespace, "NamespaceConfigType"] = {
         mlc.PARAM_SENSOR_SLOW_UPDATE_CLOUD_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         100,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Control_Electricity: (
         mlc.PARAM_SENSOR_FAST_UPDATE_PERIOD,
@@ -1002,7 +1005,7 @@ POLLING_STRATEGY_CONF: dict[mn.Namespace, "NamespaceConfigType"] = {
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         1850,
         0,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Control_Mp3: (
         0,
@@ -1016,63 +1019,63 @@ POLLING_STRATEGY_CONF: dict[mn.Namespace, "NamespaceConfigType"] = {
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         35,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Control_Presence_Config: (
         mlc.PARAM_CONFIG_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         260,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Control_Screen_Brightness: (
         mlc.PARAM_CONFIG_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         70,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Control_Sensor_Latest: (
         mlc.PARAM_SENSOR_SLOW_UPDATE_PERIOD,
         mlc.PARAM_SENSOR_SLOW_UPDATE_CLOUD_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         80,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Control_Sensor_LatestX: (
         mlc.PARAM_SENSOR_SLOW_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         220,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_GarageDoor_Config: (
         mlc.PARAM_CONFIG_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         410,
         0,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_GarageDoor_MultipleConfig: (
         mlc.PARAM_CONFIG_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         140,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_RollerShutter_Adjust: (
         mlc.PARAM_CONFIG_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         35,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_RollerShutter_Config: (
         mlc.PARAM_CONFIG_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         70,
-        NamespaceHandler.async_poll_lazy,
+        NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_RollerShutter_Position: (
         0,
