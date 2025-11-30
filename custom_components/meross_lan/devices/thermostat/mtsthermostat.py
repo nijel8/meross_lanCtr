@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING, override
 
 from ...binary_sensor import MLBinarySensor
 from ...climate import MtsClimate, MtsTemperatureNumber
-from ...helpers import reverse_lookup
 from ...helpers.entity import MEListChannelMixin
 from ...helpers.namespaces import POLLING_STRATEGY_CONF, NamespaceHandler, mc, mlc, mn
 from ...merossclient.protocol.namespaces import thermostat as mn_t
@@ -10,7 +9,6 @@ from ...number import MLConfigNumber
 from ...select import MLConfigSelect
 from ...sensor import MLEnumSensor, MLTemperatureSensor
 from ...switch import MLSwitch
-
 
 if TYPE_CHECKING:
     from typing import Any, Callable, ClassVar, Final, Unpack
