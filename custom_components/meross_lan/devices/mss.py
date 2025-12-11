@@ -273,13 +273,6 @@ class ElectricityXSensor(ElectricitySensor):
             0,
             1,
         ),
-        mc.KEY_CONSUME: (
-            False,
-            MLNumericSensor.DeviceClass.ENERGY,
-            MLNumericSensor.StateClass.TOTAL,
-            0,
-            1,
-        ),
     }
 
     __slots__ = ()

@@ -3,6 +3,7 @@ from homeassistant.components import sensor as haec
 from custom_components.meross_lan.devices.mss import (
     ConsumptionXSensor,
     ElectricitySensor,
+    ElectricityXSensor,
 )
 from custom_components.meross_lan.merossclient.protocol import (
     const as mc,
@@ -12,6 +13,7 @@ from custom_components.meross_lan.merossclient.protocol.namespaces import (
     thermostat as mn_t,
 )
 from custom_components.meross_lan.sensor import (
+    ConsumptionHSensor,
     MLEnumSensor,
     MLFilterMaintenanceSensor,
     MLHumiditySensor,
@@ -44,6 +46,7 @@ class EntityTest(EntityComponentTest):
 
     NAMESPACES_ENTITIES = {
         mn.Appliance_Config_OverTemp.name: [MLEnumSensor],
+        mn.Appliance_Control_ConsumptionH.name: [ConsumptionHSensor],
         mn.Appliance_Control_ConsumptionX.name: [ConsumptionXSensor],
         mn.Appliance_Control_Diffuser_Sensor.name: [
             MLHumiditySensor,
@@ -55,6 +58,14 @@ class EntityTest(EntityComponentTest):
             MLNumericSensor,
             MLNumericSensor,
         ],
+        mn.Appliance_Control_ElectricityX.name: [
+            # There's an issue in removing 'ElectricityXSensor' when
+            # the code in '_async_test_entities' should remove
+            # this class from 'expected_entities'
+            # ElectricityXSensor,
+            *([MLNumericSensor] * len(ElectricityXSensor.SENSOR_DEFS)),
+        ]
+        * 6,  # em06
         mn.Appliance_Control_FilterMaintenance.name: [MLFilterMaintenanceSensor],
         mn_t.Appliance_Control_Thermostat_ModeC.name: [  # mts300
             MLEnumSensor,  # output status sensors

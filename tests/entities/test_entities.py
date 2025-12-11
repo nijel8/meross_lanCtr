@@ -246,7 +246,7 @@ async def _async_test_entities(
 ):
     for entity in manager.entities.values():
 
-        entity_type = type(entity)
+        entity_class = entity.__class__
 
         if entity.PLATFORM not in COMPONENTS_TESTS:
             # TODO: add missing platform tests
@@ -262,8 +262,8 @@ async def _async_test_entities(
         # This will ensure the entity is 'available' as per an online device
         await entity_component_test.async_test_each_callback(entity)
 
-        if entity_type in expected_entities:
-            expected_entities.remove(entity_type)
+        if entity_class in expected_entities:
+            expected_entities.remove(entity_class)
         else:
             unexpected_entities.append(entity.logtag)
 

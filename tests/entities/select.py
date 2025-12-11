@@ -3,6 +3,7 @@ from homeassistant.components import select as haec
 from custom_components.meross_lan.devices.diffuser import MLDiffuserSpray
 from custom_components.meross_lan.devices.spray import MLSpray
 from custom_components.meross_lan.devices.thermostat.mtsthermostat import (
+    MtsHoldAction,
     MtsTempUnit,
     mn,
     mn_t,
@@ -27,6 +28,7 @@ class EntityTest(EntityComponentTest):
     }
     NAMESPACES_ENTITIES = {
         mn.Appliance_Control_TempUnit.name: [MtsTempUnit],
+        mn_t.Appliance_Control_Thermostat_HoldAction.name: [MtsHoldAction],
         mn_t.Appliance_Control_Thermostat_ModeC.name: [MtsTrackedSensor],
     }
     HUB_SUBDEVICES_ENTITIES = {
