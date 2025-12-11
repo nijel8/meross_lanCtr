@@ -247,8 +247,8 @@ class MtsClimate(me.MLEntity, climate.ClimateEntity):
         current_temperature = current_temperature / self.device_scale
         if self.current_temperature != current_temperature:
             self.current_temperature = current_temperature
-            self.select_tracked_sensor.check_tracking()
             self.sensor_current_temperature.update_native_value(current_temperature)
+            self.select_tracked_sensor.check_tracking()
             # temp change might be an indication of a calibration so
             # we'll speed up polling for the adjust/calibration ns
             try:
