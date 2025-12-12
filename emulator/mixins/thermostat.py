@@ -62,11 +62,35 @@ class ThermostatMixin(MerossEmulator if TYPE_CHECKING else object):
         device_scale: int
         p_mode: mt_t.Mode_C | mt_t.ModeB_C | mt_t.ModeC_C
 
-    MAP_DEVICE_SCALE = {
-        "mts200": 10,
-        "mts200b": 10,
-        "mts300": 100,
-        "mts960": 100,
+    MAP_DEVICE = {
+        "mts2": (
+            10,
+            {
+                mc.KEY_CHANNEL: 0,
+                "value": 0,
+                "max": 80,
+                "min": -80,
+            },
+        ),
+        "mts3": (
+            100,
+            {
+                mc.KEY_CHANNEL: 0,
+                "value": 0,
+                "max": 450,
+                "min": -450,
+                "humiValue": 0,
+            },
+        ),
+        "mts9": (
+            100,
+            {
+                mc.KEY_CHANNEL: 0,
+                "value": 0,
+                "max": 2000,
+                "min": -2000,
+            },
+        ),
     }
 
     # Implement an oscillator to emulate current temperature change
@@ -75,8 +99,15 @@ class ThermostatMixin(MerossEmulator if TYPE_CHECKING else object):
     CURRENT_TEMPERATURE_PERIOD = 300  # period of full cycle (seconds)
 
     def __init__(self, descriptor: "MerossEmulatorDescriptor", key):
-        self.device_scale = self.MAP_DEVICE_SCALE[descriptor.type]
+        for _type in self.MAP_DEVICE:
+            if descriptor.type.startswith(_type):
+                break
+        else:
+            raise RuntimeError("Unsupported thermostat type " + descriptor.type)
+        self.device_scale = self.MAP_DEVICE[_type][0]
+
         super().__init__(descriptor, key)
+
         # sanityze
         ability = descriptor.ability
         ns = mn_t.Appliance_Control_Thermostat_Calibration
@@ -84,31 +115,7 @@ class ThermostatMixin(MerossEmulator if TYPE_CHECKING else object):
             self.update_namespace_state(
                 ns,
                 MerossEmulator.NSDefaultMode.MixOut,
-                (
-                    {
-                        mc.KEY_CHANNEL: 0,
-                        "value": 0,
-                        "max": 450,
-                        "min": -450,
-                        "humiValue": 0,
-                    }
-                    if descriptor.type.startswith("mts300")
-                    else (
-                        {
-                            mc.KEY_CHANNEL: 0,
-                            "value": 0,
-                            "max": 2000,
-                            "min": -2000,
-                        }
-                        if descriptor.type.startswith("mts960")
-                        else {
-                            mc.KEY_CHANNEL: 0,
-                            "value": 0,
-                            "max": 8 * self.device_scale,
-                            "min": -8 * self.device_scale,
-                        }
-                    )
-                ),
+                self.MAP_DEVICE[_type][1],
             )
         ns = mn_t.Appliance_Control_Thermostat_DeadZone
         if ns.name in ability:

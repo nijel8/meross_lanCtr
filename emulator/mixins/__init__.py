@@ -795,16 +795,7 @@ class MerossEmulator:
         except KeyError:
             self.namespaces[ns.name] = p_namespace = {}
 
-        if isinstance(ns.request_payload_type.value, dict):
-            assert type(payload) is dict
-            try:
-                if nsdefaultmode is MerossEmulator.NSDefaultMode.MixIn:
-                    p_namespace[ns.key] |= payload
-                else:
-                    p_namespace[ns.key] = payload | p_namespace[ns.key]
-            except KeyError:
-                p_namespace[ns.key] = payload
-        else:  # isinstance(ns.request_payload_type.value, list):
+        if isinstance(ns.request_payload_type.value, list) or isinstance(payload, list):
             try:
                 p_state: list = p_namespace[ns.key]
             except KeyError:
@@ -821,6 +812,14 @@ class MerossEmulator:
                         p_channel_state |= p_payload_channel | p_channel_state
                 except KeyError:
                     p_state.append(p_payload_channel)
+        else:
+            try:
+                if nsdefaultmode is MerossEmulator.NSDefaultMode.MixIn:
+                    p_namespace[ns.key] |= payload
+                else:
+                    p_namespace[ns.key] = payload | p_namespace[ns.key]
+            except KeyError:
+                p_namespace[ns.key] = payload
 
     def mqtt_publish_push(self, namespace: str, payload: dict):
         """
