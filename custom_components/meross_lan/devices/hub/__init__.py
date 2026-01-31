@@ -1499,7 +1499,7 @@ POLLING_STRATEGY_CONF |= {
         NamespaceHandler.async_poll_smart,
     ),
     mn_h.Appliance_Control_Sensor_LatestX: (
-        mlc.PARAM_SENSOR_SLOW_UPDATE_PERIOD,
+        mlc.PARAM_SENSOR_FAST_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         220,

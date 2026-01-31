@@ -1085,14 +1085,14 @@ POLLING_STRATEGY_CONF: dict[mn.Namespace, "NamespaceConfigType"] = {
         NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Control_Sensor_Latest: (
-        mlc.PARAM_SENSOR_SLOW_UPDATE_PERIOD,
+        mlc.PARAM_SENSOR_FAST_UPDATE_PERIOD,
         mlc.PARAM_SENSOR_SLOW_UPDATE_CLOUD_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         80,
         NamespaceHandler.async_poll_smart,
     ),
     mn.Appliance_Control_Sensor_LatestX: (
-        mlc.PARAM_SENSOR_SLOW_UPDATE_PERIOD,
+        mlc.PARAM_SENSOR_FAST_UPDATE_PERIOD,
         mlc.PARAM_CLOUDMQTT_UPDATE_PERIOD,
         mlc.PARAM_HEADER_SIZE,
         220,
