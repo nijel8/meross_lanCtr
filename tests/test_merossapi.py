@@ -2,7 +2,6 @@
 
 from time import time
 import typing
-from uuid import uuid4
 
 from pytest_homeassistant_custom_component.common import async_fire_mqtt_message
 
@@ -44,10 +43,9 @@ async def test_hamqtt_device_session(
             mn.Appliance_Control_Bind.name,
             mc.METHOD_SET,
             {mn.Appliance_Control_Bind.key: {}},  # actual payload actually doesn't care
-            uuid4().hex,
             key,
-            topic_subscribe,
-            mc.HEADER_TRIGGERSRC_DEVBOOT,
+            from_=topic_subscribe,
+            triggerSrc=mc.HEADER_TRIGGERSRC_DEVBOOT,
         )
         # since nothing is (yet) built at the moment, we expect this message
         # will go through all of the initialization process of ComponentApi
@@ -79,10 +77,9 @@ async def test_hamqtt_device_session(
             mn.Appliance_System_Clock.name,
             mc.METHOD_PUSH,
             {"clock": {"timestamp": int(time())}},
-            uuid4().hex,
             key,
-            topic_publish,
-            mc.HEADER_TRIGGERSRC_DEVBOOT,
+            from_=topic_publish,
+            triggerSrc=mc.HEADER_TRIGGERSRC_DEVBOOT,
         )
         async_fire_mqtt_message(hass, topic_publish, json_dumps(message_clock_push))
         await hass.async_block_till_done()
@@ -109,10 +106,9 @@ async def test_hamqtt_device_session(
                     "powerRatio": 0,
                 }
             },
-            uuid4().hex,
             key,
-            topic_publish,
-            mc.HEADER_TRIGGERSRC_DEVBOOT,
+            from_=topic_publish,
+            triggerSrc=mc.HEADER_TRIGGERSRC_DEVBOOT,
         )
         async_fire_mqtt_message(
             hass, topic_publish, json_dumps(message_consumption_push)

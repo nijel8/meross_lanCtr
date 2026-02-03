@@ -241,9 +241,8 @@ async def test_mqtt_discovery_config_flow(hass: "HomeAssistant", hamqtt_mock):
         mn.Appliance_Control_ToggleX.name,
         mc.METHOD_PUSH,
         {mn.Appliance_Control_ToggleX.key: {mc.KEY_CHANNEL: 0, mc.KEY_ONOFF: 0}},
-        uuid4().hex,
         key,
-        mc.TOPIC_REQUEST.format(device_id),
+        from_=mc.TOPIC_REQUEST.format(device_id),
     )
 
     async_fire_mqtt_message(hass, topic, json_dumps(payload))
