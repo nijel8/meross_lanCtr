@@ -1,8 +1,0 @@
-homeassistant
-zlib-ng
-debugpy
-aiousbwatcher
-async_upnp_client
-radios
-av
-uv
