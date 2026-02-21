@@ -23,6 +23,18 @@ KEY_TIMESTAMP = "timestamp"
 KEY_TIMESTAMPMS = "timestampMs"
 KEY_SIGN = "sign"
 KEY_CODE = "code"
+KEY_NONCE = 'nonce'
+KEY_PARAMS = 'params'
+KEY_APISTATUS = 'apiStatus'
+KEY_TOKEN = 'token'
+KEY_INFO = 'info'
+KEY_DATA = 'data'
+KEY_KEY = 'key'
+
+# Meross cloud HTTP api
+MEROSS_API_V1_URL = 'https://iot.meross.com/v1'
+MEROSS_API_SIGNIN_PATH = '/Auth/signIn'
+MEROSS_API_LOGOUT_PATH = '/Profile/Logout'
 
 # Errors
 METHOD_ERROR = "ERROR"

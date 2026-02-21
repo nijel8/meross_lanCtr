@@ -5,8 +5,8 @@
 import subprocess
 import asyncio
 
-from httpclient import MerossHttpClient
-import const as mc
+from meross_lan.httpclient import MerossHttpClient
+import meross_lan.const as mc
 
 async def main():
     # Create local HTTP client using device IP and key

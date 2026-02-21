@@ -16,7 +16,7 @@ from uuid import uuid4
 from hashlib import md5
 from time import time
 
-import const as mc
+from . import const as mc
 
 class MerossProtocolError(Exception):
     """
